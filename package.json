@@ -1,0 +1,31 @@
+{
+  "name": "stackoverflow-clone",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --watch backend --exec node backend/server.js",
+    "server": "nodemon backend/server.js",
+    "client": "npm start --prefix frontend",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akkySrivastava/stackoverflow-clone-mern.git"
+  },
+  "author": "Code with akky",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/akkySrivastava/stackoverflow-clone-mern/issues"
+  },
+  "homepage": "https://github.com/akkySrivastava/stackoverflow-clone-mern#readme",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^6.0.2",
+    "nodemon": "^2.0.12"
+  }
+}
