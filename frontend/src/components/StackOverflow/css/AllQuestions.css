@@ -4,6 +4,7 @@
   width: 100%;
   padding: 20px 0px;
   border-bottom: 1px solid #eee;
+  width: 100%;
 }
 
 .all-questions-container {
@@ -12,6 +13,7 @@
   flex-direction: row;
   /* align-items: center; */
   justify-content: space-between;
+  width: 100%;
 }
 
 .all-questions-left {
@@ -41,6 +43,7 @@
 .question-answer {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .question-answer > a {
@@ -95,6 +98,10 @@
   padding: 10px 0px;
   border-bottom: 1px solid #eee;
   border-top: 1px solid #eee;
+}
+
+.comment > p {
+  margin: 10px 0;
 }
 
 .comment > p > span {

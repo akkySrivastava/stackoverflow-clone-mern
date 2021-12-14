@@ -1,8 +1,16 @@
 import { Avatar } from "@material-ui/core";
-import React from "react";
+import React, { useState } from "react";
 import "./css/AllQuestions.css";
+import ReactHtmlParser from "react-html-parser";
+import { Link } from "react-router-dom";
 
-function AllQuestions() {
+function AllQuestions({ data }) {
+  function truncate(str, n) {
+    return str?.length > n ? str.substr(0, n - 1) + "..." : str;
+  }
+
+  let tags = JSON.parse(data?.tags[0]);
+  // console.log();
   return (
     <div className="all-questions">
       <div className="all-questions-container">
@@ -13,7 +21,7 @@ function AllQuestions() {
               <span>votes</span>
             </div>
             <div className="all-option">
-              <p>0</p>
+              <p>{data?.answerDetails?.length}</p>
               <span>answers</span>
             </div>
             <div className="all-option">
@@ -22,18 +30,37 @@ function AllQuestions() {
           </div>
         </div>
         <div className="question-answer">
-          <a href="/question">
-            ANSIBLE PLAYBOOK HELP! I need to uninstall application1 , stop
-            application2 services/ install application 3 restart application2
-            services
-          </a>
-          <p>
-            ANSIBLE PLAYBOOK HELP! I need to uninstall application1 , checks for
-            application2 (only if application1 is uninstalled) if application
-            two is installed then STOP application2 services and install ...
-          </p>
+          <Link to={`/question?q=${data?._id}`}>{data.title}</Link>
+
+          {/* <a href=>{data.title}</a> */}
+
+          <div
+            style={{
+              maxWidth: "90%",
+            }}
+          >
+            <div>{ReactHtmlParser(truncate(data.body, 200))}</div>
+          </div>
+          <div
+            style={{
+              display: "flex",
+            }}
+          >
+            {tags.map((_tag) => (
+              <p
+                style={{
+                  margin: "10px 5px",
+                  padding: "5px 10px",
+                  backgroundColor: "#007cd446",
+                  borderRadius: "3px",
+                }}
+              >
+                {_tag}
+              </p>
+            ))}
+          </div>
           <div className="author">
-            <small>asked 1 min ago</small>
+            <small>{data.create_at}</small>
             <div className="auth-details">
               <Avatar />
               <p>Christine Lane</p>

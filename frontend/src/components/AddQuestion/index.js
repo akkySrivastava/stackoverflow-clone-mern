@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // ES6
 import "./index.css";
 import Editor from "react-quill/lib/toolbar";
+import axios from "axios";
+import { TagsInput } from "react-tag-input-component";
+// import ChipsArray from "./TagsInput";
 
 function Index() {
   var toolbarOptions = [
@@ -57,6 +60,35 @@ function Index() {
   /*
    * PropType validation
    */
+
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [tag, setTag] = useState([]);
+
+  const handleQuill = (value) => {
+    setBody(value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (title !== "" && body !== "") {
+      const bodyJSON = {
+        title: title,
+        body: body,
+        tag: JSON.stringify(tag),
+      };
+      axios
+        .post("/api/question", bodyJSON)
+        .then((res) => {
+          console.log(res.data);
+          alert("Question added successfully");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
   return (
     <div className="add-question">
       <div className="add-question-container">
@@ -73,6 +105,8 @@ function Index() {
                   person
                 </small>
                 <input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
                   type="text"
                   placeholder="e.g Is there an R function for finding teh index of an element in a vector?"
                 />
@@ -86,6 +120,8 @@ function Index() {
                   question
                 </small>
                 <ReactQuill
+                  value={body}
+                  onChange={handleQuill}
                   modules={Editor.modules}
                   className="react-quill"
                   theme="snow"
@@ -98,16 +134,31 @@ function Index() {
                 <small>
                   Add up to 5 tags to describe what your question is about
                 </small>
-                <input
+                {/* <input
+                  value={tag}
+                  onChange={(e) => setTag(e.target.value)}
+                  data-role="tagsinput"
+                  data-tag-trigger="Space"
                   type="text"
                   placeholder="e.g. (asp.net-mvc php react json)"
+                /> */}
+
+                <TagsInput
+                  value={tag}
+                  onChange={setTag}
+                  name="fruits"
+                  placeHolder="press enter to add new tag"
                 />
+
+                {/* <ChipsArray /> */}
               </div>
             </div>
           </div>
         </div>
 
-        <button className="button">Add your question</button>
+        <button onClick={handleSubmit} className="button">
+          Add your question
+        </button>
       </div>
     </div>
   );

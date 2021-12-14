@@ -1,9 +1,13 @@
 import { Avatar } from "@material-ui/core";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import BookmarkIcon from "@material-ui/icons/Bookmark";
 import HistoryIcon from "@material-ui/icons/History";
 import ReactQuill from "react-quill";
 import Editor from "react-quill/lib/toolbar";
+import axios from "axios";
+import ReactHtmlParser from "react-html-parser";
+import { Link } from "react-router-dom";
+import "./index.css";
 
 function MainQuestion() {
   var toolbarOptions = [
@@ -16,10 +20,13 @@ function MainQuestion() {
     [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
     [{ direction: "rtl" }], // text direction
 
-    [{ size: ["small", false, "large", "huge"] }], // custom dropdown
+    // [{ size: ["small", false, "large", "huge"] }], // custom dropdown
     [{ header: [1, 2, 3, 4, 5, 6, false] }],
 
-    [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+    [
+      { color: ["#ff0000", "#00ff00", "#0000ff", "#220055"] },
+      { background: [] },
+    ], // dropdown with defaults from theme
     [{ font: [] }],
     [{ align: [] }],
 
@@ -54,21 +61,89 @@ function MainQuestion() {
     "video",
   ];
 
+  let search = window.location.search;
+  const params = new URLSearchParams(search);
+  const id = params.get("q");
+
+  const [questionData, setQuestionData] = useState();
+  const [answer, setAnswer] = useState("");
+  const [show, setShow] = useState(false);
+  const [comment, setComment] = useState("");
+  const [comments, setComments] = useState([]);
+
+  const handleQuill = (value) => {
+    setAnswer(value);
+  };
+
+  useEffect(() => {
+    async function getFunctionDetails() {
+      await axios
+        .get(`/api/question/${id}`)
+        .then((res) => setQuestionData(res.data[0]))
+        .catch((err) => console.log(err));
+    }
+    getFunctionDetails();
+  }, [id]);
+
+  async function getUpdatedAnswer() {
+    await axios
+      .get(`/api/question/${id}`)
+      .then((res) => setQuestionData(res.data[0]))
+      .catch((err) => console.log(err));
+  }
+
+  console.log(questionData);
+  const handleSubmit = async () => {
+    const body = {
+      question_id: id,
+      answer: answer,
+    };
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    await axios
+      .post("/api/answer", body, config)
+      .then(() => {
+        alert("Answer added successfully");
+        setAnswer("");
+        getUpdatedAnswer();
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const handleComment = async () => {
+    const body = {
+      question_id: id,
+      comment: comment,
+    };
+    await axios.post(`/api/comment/${id}`, body).then((res) => {
+      setComment("");
+      setShow(false);
+      getUpdatedAnswer();
+      console.log(res.data);
+    });
+    // setShow(true)
+  };
   return (
     <div className="main">
       <div className="main-container">
         <div className="main-top">
-          <h2 className="main-question">
-            How to optimise a for loop for faster execution time
-          </h2>
-          <a href="/add-question">
+          <h2 className="main-question">{questionData?.title} </h2>
+          <Link to="/add-question">
             <button>Ask Question</button>
-          </a>
+          </Link>
+          {/* <a href="/add-question">
+            <button>Ask Question</button>
+          </a> */}
         </div>
         <div className="main-desc">
           <div className="info">
             <p>
-              Asked<span>today</span>
+              Asked
+              <span>{new Date(questionData?.created_at).toLocaleString()}</span>
             </p>
             <p>
               Active<span>today</span>
@@ -94,13 +169,12 @@ function MainQuestion() {
               </div>
             </div>
             <div className="question-answer">
-              <p>
-                I am looking to optimize a loop using loop unswitching and SIMD
-                so that I can speedup execution time.
-              </p>
+              <p>{ReactHtmlParser(questionData?.body)}</p>
 
               <div className="author">
-                <small>asked 1 min ago</small>
+                <small>
+                  asked {new Date(questionData?.created_at).toLocaleString()}
+                </small>
                 <div className="auth-details">
                   <Avatar />
                   <p>Christine Lane</p>
@@ -108,17 +182,43 @@ function MainQuestion() {
               </div>
               <div className="comments">
                 <div className="comment">
-                  <p>
-                    Loop unswitching works when the condition has a constant
-                    value throughout the loop. But here, since fxp is modified
-                    inside the loop, the truth value of fxp 0 may change during
-                    the loop. So I don't see how to unswitch it here. Unless you
-                    know something about the values in the LUT array that prove
-                    this can't happen? <span>- Nate Eldredge</span> {"    "}
-                    <small>Time ago</small>
-                  </p>
+                  {questionData?.comments &&
+                    questionData?.comments.map((_qd) => (
+                      <p>
+                        {_qd.comment} <span>- Nate Eldredge</span> {"    "}
+                        <small>
+                          {new Date(_qd.created_at).toLocaleString()}
+                        </small>
+                      </p>
+                    ))}
                 </div>
-                <p>Add a comment</p>
+                <p onClick={() => setShow(!show)}>Add a comment</p>
+                {show && (
+                  <div className="title">
+                    <textarea
+                      style={{
+                        margin: "5px 0px",
+                        padding: "10px",
+                        border: "1px solid rgba(0, 0, 0, 0.2)",
+                        borderRadius: "3px",
+                        outline: "none",
+                      }}
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                      type="text"
+                      placeholder="Add your comment..."
+                      rows={5}
+                    />
+                    <button
+                      onClick={handleComment}
+                      style={{
+                        maxWidth: "fit-content",
+                      }}
+                    >
+                      Add comment
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -136,48 +236,45 @@ function MainQuestion() {
               fontWeight: "300",
             }}
           >
-            1 Answer
+            {questionData && questionData?.answerDetails.length} Answers
           </p>
-          <div className="all-questions-container">
-            <div className="all-questions-left">
-              <div className="all-options">
-                <p className="arrow">▲</p>
+          {questionData?.answerDetails.map((_q) => (
+            <>
+              <div
+                style={{
+                  borderBottom: "1px solid #eee",
+                }}
+                key={_q._id}
+                className="all-questions-container"
+              >
+                <div className="all-questions-left">
+                  <div className="all-options">
+                    <p className="arrow">▲</p>
 
-                <p className="arrow">0</p>
+                    <p className="arrow">0</p>
 
-                <p className="arrow">▼</p>
+                    <p className="arrow">▼</p>
 
-                <BookmarkIcon />
+                    <BookmarkIcon />
 
-                <HistoryIcon />
-              </div>
-            </div>
-            <div className="question-answer">
-              I am looking to optimize a loop using loop unswitching and SIMD so
-              that I can speedup execution time.
-              <div className="author">
-                <small>asked 1 min ago</small>
-                <div className="auth-details">
-                  <Avatar />
-                  <p>Christine Lane</p>
+                    <HistoryIcon />
+                  </div>
+                </div>
+                <div className="question-answer">
+                  {ReactHtmlParser(_q.answer)}
+                  <div className="author">
+                    <small>
+                      asked {new Date(_q.created_at).toLocaleString()}
+                    </small>
+                    <div className="auth-details">
+                      <Avatar />
+                      <p>Christine Lane</p>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="comments">
-                <div className="comment">
-                  <p>
-                    Loop unswitching works when the condition has a constant
-                    value throughout the loop. But here, since fxp is modified
-                    inside the loop, the truth value of fxp 0 may change during
-                    the loop. So I don't see how to unswitch it here. Unless you
-                    know something about the values in the LUT array that prove
-                    this can't happen? <span>- Nate Eldredge</span> {"    "}
-                    <small>Time ago</small>
-                  </p>
-                </div>
-                <p>Add a comment</p>
-              </div>
-            </div>
-          </div>
+            </>
+          ))}
         </div>
         {/* <div className="questions">
           <div className="question">
@@ -199,6 +296,8 @@ function MainQuestion() {
           Your Answer
         </h3>
         <ReactQuill
+          value={answer}
+          onChange={handleQuill}
           modules={Editor.modules}
           className="react-quill"
           theme="snow"
@@ -208,6 +307,7 @@ function MainQuestion() {
         />
       </div>
       <button
+        onClick={handleSubmit}
         style={{
           marginTop: "100px",
           maxWidth: "fit-content",

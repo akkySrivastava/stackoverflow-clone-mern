@@ -5,6 +5,8 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import hljs from "highlight.js";
 import "highlight.js/styles/github.css";
+import store from "./app/store";
+import { Provider } from "react-redux";
 
 hljs.configure({
   // optionally configure hljs
@@ -24,7 +26,9 @@ hljs.configure({
 });
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <App />
+    </Provider>
   </React.StrictMode>,
   document.getElementById("root")
 );

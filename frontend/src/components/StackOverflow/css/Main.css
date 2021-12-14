@@ -83,13 +83,21 @@ button {
 .questions {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .question {
   display: flex;
   flex-direction: column;
-  padding: 15px 30px;
+  padding: 15px 0px;
   border-bottom: 1px solid #eee;
+  width: 100%;
+}
+
+pre {
+  display: flex;
+  width: 90px;
+  flex-wrap: wrap;
 }
 
 @media screen and (min-width: 768px) {
