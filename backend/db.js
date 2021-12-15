@@ -10,6 +10,6 @@ module.exports.connect = () => {
       useUnifiedTopology: true,
       // useCreateIndex: true,
     })
-    .then(() => console.log("MongoDB connected successfully"))
+    .then(() => console.log("MongoDB is connected successfully"))
     .catch((err) => console.log("Error: ", err));
 };
