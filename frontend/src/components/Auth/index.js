@@ -29,7 +29,7 @@ function Index() {
     signInWithPopup(auth, provider)
       .then((res) => {
         setLoading(false);
-        console.log(res);
+        // console.log(res);
         history.push("/");
         // return (
         //   <>
@@ -55,7 +55,7 @@ function Index() {
     } else {
       signInWithEmailAndPassword(auth, email, password)
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           history.push("/");
           setLoading(false);
         })
@@ -79,7 +79,7 @@ function Index() {
     } else {
       createUserWithEmailAndPassword(auth, email, password)
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           history.push("/");
           setLoading(false);
         })

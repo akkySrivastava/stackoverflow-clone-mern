@@ -6,6 +6,7 @@ router.post("/", async (req, res) => {
   const answerData = new answerDB({
     question_id: req.body.question_id,
     answer: req.body.answer,
+    user: req.body.user,
   });
 
   await answerData

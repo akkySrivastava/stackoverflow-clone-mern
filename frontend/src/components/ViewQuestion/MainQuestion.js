@@ -8,6 +8,9 @@ import axios from "axios";
 import ReactHtmlParser from "react-html-parser";
 import { Link } from "react-router-dom";
 import "./index.css";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../feature/userSlice";
+import { stringAvatar } from "../../utils/Avatar";
 
 function MainQuestion() {
   var toolbarOptions = [
@@ -69,7 +72,8 @@ function MainQuestion() {
   const [answer, setAnswer] = useState("");
   const [show, setShow] = useState(false);
   const [comment, setComment] = useState("");
-  const [comments, setComments] = useState([]);
+  // const [comments, setComments] = useState([]);
+  const user = useSelector(selectUser);
 
   const handleQuill = (value) => {
     setAnswer(value);
@@ -92,11 +96,12 @@ function MainQuestion() {
       .catch((err) => console.log(err));
   }
 
-  console.log(questionData);
+  // console.log(questionData);
   const handleSubmit = async () => {
     const body = {
       question_id: id,
       answer: answer,
+      user: user,
     };
     const config = {
       headers: {
@@ -118,12 +123,13 @@ function MainQuestion() {
     const body = {
       question_id: id,
       comment: comment,
+      user: user,
     };
     await axios.post(`/api/comment/${id}`, body).then((res) => {
       setComment("");
       setShow(false);
       getUpdatedAnswer();
-      console.log(res.data);
+      // console.log(res.data);
     });
     // setShow(true)
   };
@@ -176,16 +182,24 @@ function MainQuestion() {
                   asked {new Date(questionData?.created_at).toLocaleString()}
                 </small>
                 <div className="auth-details">
-                  <Avatar />
-                  <p>Christine Lane</p>
+                  <Avatar {...stringAvatar(questionData?.user?.displayName)} />
+                  <p>
+                    {questionData?.user?.displayName
+                      ? questionData?.user?.displayName
+                      : "Natalia lee"}
+                  </p>
                 </div>
               </div>
               <div className="comments">
                 <div className="comment">
                   {questionData?.comments &&
                     questionData?.comments.map((_qd) => (
-                      <p>
-                        {_qd.comment} <span>- Nate Eldredge</span> {"    "}
+                      <p key={_qd?._id}>
+                        {_qd.comment}{" "}
+                        <span>
+                          - {_qd.user ? _qd.user.displayName : "Nate Eldredge"}
+                        </span>{" "}
+                        {"    "}
                         <small>
                           {new Date(_qd.created_at).toLocaleString()}
                         </small>
@@ -267,8 +281,12 @@ function MainQuestion() {
                       asked {new Date(_q.created_at).toLocaleString()}
                     </small>
                     <div className="auth-details">
-                      <Avatar />
-                      <p>Christine Lane</p>
+                      <Avatar {...stringAvatar(_q?.user?.displayName)} />
+                      <p>
+                        {_q?.user?.displayName
+                          ? _q?.user?.displayName
+                          : "Natalia lee"}
+                      </p>
                     </div>
                   </div>
                 </div>

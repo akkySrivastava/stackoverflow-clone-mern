@@ -9,6 +9,7 @@ router.post("/:id", async (req, res) => {
       .create({
         question_id: req.params.id,
         comment: req.body.comment,
+        user: req.body.user,
       })
       .then((doc) => {
         res.status(201).send({

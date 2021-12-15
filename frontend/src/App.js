@@ -33,7 +33,7 @@ function App() {
       } else {
         dispatch(logout());
       }
-      console.log(authUser);
+      // console.log(authUser);
     });
   }, [dispatch]);
 

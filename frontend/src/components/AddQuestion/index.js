@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
-
+import { useSelector } from "react-redux";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // ES6
 import "./index.css";
 import Editor from "react-quill/lib/toolbar";
 import axios from "axios";
 import { TagsInput } from "react-tag-input-component";
+import { selectUser } from "../../feature/userSlice";
+import { useHistory } from "react-router-dom";
 // import ChipsArray from "./TagsInput";
 
 function Index() {
+  const user = useSelector(selectUser);
   var toolbarOptions = [
     ["bold", "italic", "underline", "strike"], // toggled buttons
     ["blockquote", "code-block"],
@@ -64,12 +67,13 @@ function Index() {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [tag, setTag] = useState([]);
+  const history = useHistory();
 
   const handleQuill = (value) => {
     setBody(value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (title !== "" && body !== "") {
@@ -77,12 +81,14 @@ function Index() {
         title: title,
         body: body,
         tag: JSON.stringify(tag),
+        user: user,
       };
-      axios
+      await axios
         .post("/api/question", bodyJSON)
         .then((res) => {
-          console.log(res.data);
+          // console.log(res.data);
           alert("Question added successfully");
+          history.push("/");
         })
         .catch((err) => {
           console.log(err);

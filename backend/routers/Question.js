@@ -9,7 +9,7 @@ router.post("/", async (req, res) => {
     title: req.body.title,
     body: req.body.body,
     tags: req.body.tag,
-    user_id: req.body.user_id,
+    user: req.body.user,
   });
 
   await questionData
@@ -65,7 +65,7 @@ router.get("/:id", async (req, res) => {
             {
               $project: {
                 _id: 1,
-                // user_id: 1,
+                user: 1,
                 answer: 1,
                 // created_at: 1,
                 question_id: 1,
@@ -92,7 +92,7 @@ router.get("/:id", async (req, res) => {
               $project: {
                 _id: 1,
                 question_id: 1,
-                // user_id: 1,
+                user: 1,
                 comment: 1,
                 // created_at: 1,
                 // question_id: 1,

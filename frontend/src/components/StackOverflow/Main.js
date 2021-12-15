@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 function Main({ questions }) {
   // const [questions, setQuestions] = useState([]);
 
-  console.log(questions);
+  // console.log(questions);
   return (
     <div className="main">
       <div className="main-container">
