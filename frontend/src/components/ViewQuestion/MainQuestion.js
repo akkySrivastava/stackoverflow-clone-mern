@@ -120,17 +120,20 @@ function MainQuestion() {
   };
 
   const handleComment = async () => {
-    const body = {
-      question_id: id,
-      comment: comment,
-      user: user,
-    };
-    await axios.post(`/api/comment/${id}`, body).then((res) => {
-      setComment("");
-      setShow(false);
-      getUpdatedAnswer();
-      // console.log(res.data);
-    });
+    if (comment !== "") {
+      const body = {
+        question_id: id,
+        comment: comment,
+        user: user,
+      };
+      await axios.post(`/api/comment/${id}`, body).then((res) => {
+        setComment("");
+        setShow(false);
+        getUpdatedAnswer();
+        // console.log(res.data);
+      });
+    }
+
     // setShow(true)
   };
   return (
